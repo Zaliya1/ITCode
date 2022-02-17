@@ -1,0 +1,114 @@
+body {
+    background-color: #E5E5E5;
+    font-family: 'Courier New';
+    font-weight: 600;
+}
+
+h1,
+ul,
+p {
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    margin: 0 auto;
+    width: 440px;
+    background-color: white;
+    padding: 10px;
+}
+
+.header {
+    margin: 0 auto;
+}
+
+.heading {
+    color: #3F3D56;
+    font-size: 24px;
+    background-image: url(img/undraw_to_do_xvvc.svg);
+    background-repeat: no-repeat;
+    background-position: center;
+    height: 235px;
+    padding-top: 25px;
+    display: flex;
+    justify-content: center;
+}
+
+.week__item {
+    background-image: url(img/day.svg);
+    display: flex;
+    color: white;
+    font-size: 14px;
+    width: 48px;
+    height: 51px;
+    align-self: center;
+    justify-content: center;
+}
+
+.week__list {
+    display: flex;
+    justify-content: space-between;
+}
+
+.text {
+    display: flex;
+    align-self: center;
+}
+
+.new-tasks {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.inputs {
+    display: flex;
+    flex-direction: column;
+    width: 90%;
+}
+
+.save-task {
+    width: 42px;
+    height: 42px;
+    background-color: rgba(103, 107, 194, 1);
+    border: 0px;
+    border-radius: 10px;
+    margin-top: 10px;
+    background-image: url(img/add.svg);
+    background-position: center center;
+    cursor: pointer;
+    background-repeat: no-repeat;
+}
+
+.input-title,
+.input-description {
+    height: 30px;
+    width: 100;
+    margin-top: 10px;
+    border-radius: 10px;
+    border: 1px solid rgba(103, 107, 194, 1);
+    color: #3F3D56;
+}
+
+.task {
+    background-color: #fff;
+    padding-left: 22px;
+    background-image: url(img/check.svg);
+    background-repeat: no-repeat;
+    background-position: left top 50%;
+}
+
+.task:not(:last-child) {
+    margin-bottom: 10px;
+}
+
+.title {
+    color: #3F3D56;
+    font-size: 15px;
+}
+
+.description {
+    color: #C4C4C4;
+    font-size: 12px;
+}
