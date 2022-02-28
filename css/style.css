@@ -6,9 +6,12 @@ body {
 
 h1,
 ul,
-p {
-    margin: 0;
-    padding: 0;
+p,
+button {
+    margin: 0px;
+    padding: 0px;
+    border: 0px;
+    background-color: white;
 }
 
 .container {
@@ -60,6 +63,7 @@ p {
     flex-direction: column;
     align-items: center;
     margin-bottom: 30px;
+
 }
 
 .inputs {
@@ -84,22 +88,28 @@ p {
 .input-title,
 .input-description {
     height: 30px;
-    width: 100;
+    width: 100%;
     margin-top: 10px;
     border-radius: 10px;
     border: 1px solid rgba(103, 107, 194, 1);
     color: #3F3D56;
+    padding-left: 5px;
 }
 
 .task {
     background-color: #fff;
-    padding-left: 22px;
-    background-image: url(../img/check.svg);
-    background-repeat: no-repeat;
-    background-position: left top 50%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .task:not(:last-child) {
+    margin-bottom: 10px;
+}
+
+.tasks {
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(103, 107, 194, 1);
     margin-bottom: 10px;
 }
 
@@ -111,4 +121,32 @@ p {
 .description {
     color: #C4C4C4;
     font-size: 12px;
+}
+
+.buttons {
+    height: 22px;
+    width: 12%;
+    display: flex;
+    justify-content: space-around;
+}
+
+.button-remove,
+.button-completed,
+.button-uncompleted {
+    width: 45%;
+    height: 100%;
+    background-repeat: no-repeat;
+    cursor: pointer;
+}
+
+.button-remove {
+    background-image: url(../img/icon1.svg);
+}
+
+.button-completed {
+    background-image: url(../img/icon.svg);
+}
+
+.button-uncompleted {
+    background-image: url(../img/icon2.svg);
 }
