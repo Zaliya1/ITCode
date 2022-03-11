@@ -1,299 +1,121 @@
 <template>
   <main id="app">
-    <CreateTask @create-task="saveNewTask"></CreateTask>
-    <ChangeTasks
-      @removeAll="removeAll"
-      @sortingTasks="sortingTasks"
-    ></ChangeTasks>
-    <input
-      v-model="searchTitle"
-      class="filterInput"
-      placeholder="Начать поиск"
-    />
-    <div class="tasks">
-      <AddTasks
-        v-for="(task, index) in filteredTasks"
-        :key="index"
-        :task="task"
-        @completeTask="completeTask(task)"
-        @removeTask="removeTask(task)"
-      ></AddTasks>
-    </div>
-    <div class="tasks-completed">
-      <AddTasks
-        v-for="(task, index) in completedTasks"
-        :key="index"
-        :task="task"
-        @completeTask="completeTask(task)"
-        @removeTask="removeTask(task)"
-      ></AddTasks>
+    <div class="container">
+      <h1 class="h1">Топ-20 лучших фильмов по рейтингу Кинопоиска</h1>
+      <button class="sort-rating" v-on:click="sortRating">
+        Сортировать по рейтингу
+      </button>
+      <input
+        type="text"
+        class="input-search"
+        placeholder="Поиск"
+        v-model="searchFilms"
+        v-on:input="searchFilm"
+      />
+      <AllFilms
+        :films="arrayFilms"
+        @openModal="openModal"
+        v-if="arrayUpdateFilms.length === 0"
+      ></AllFilms>
+      <AllFilms
+        :films="arrayUpdateFilms"
+        @openModal="openModal"
+        v-if="arrayUpdateFilms.length > 0"
+      ></AllFilms>
+      <CreateModal
+        v-if="isModal"
+        :index="indexModal"
+        :films="arrayFilms"
+        @closeModal="closeModal"
+      ></CreateModal>
     </div>
   </main>
 </template>
 
 <script>
-import AddTasks from "./components/AddTasks.vue";
-import CreateTask from "./components/CreateTask.vue";
-import ChangeTasks from "./components/ChangeTasks.vue";
+import CreateModal from "./components/CreateModal";
+import AllFilms from "./components/AllFilms";
 export default {
   name: "App",
   data() {
     return {
-      tasks: [],
-      searchTitle: "",
+      arrayFilms: [],
+      indexModal: "",
+      isModal: false,
+      searchFilms: "",
+      arrayUpdateFilms: [],
     };
   },
   components: {
-    AddTasks,
-    CreateTask,
-    ChangeTasks,
+    CreateModal,
+    AllFilms,
+  },
+  beforeMount() {
+    this.createArr();
   },
   methods: {
-    saveNewTask(data) {
-      // создание задачи. Добавила id, потому что через index не всегда правильно удаляются задачи
-      this.tasks.push({ id: this.tasks.length + 1, ...data });
+    async createArr() {
+      let obj = await fetch(
+        "https://kinopoiskapiunofficial.tech/api/v2.2/films/top",
+        {
+          method: "GET",
+          headers: {
+            "X-API-KEY": "63370443-a34d-4400-bd01-688bd93b9929",
+            "Content-Type": "application/json",
+          },
+        }
+      )
+        .then((res) => res.json())
+        .catch((err) => console.log(err));
+      this.arrayFilms = obj.films;
     },
-    completeTask(task) {
-      // функция выполнения/невыполнения задачи
-      const findTask = this.tasks.find((item) => item.id === task.id);
-      findTask.do = !findTask.do;
+    openModal(index) {
+      this.isModal = true;
+      this.indexModal = index;
     },
-    removeTask(task) {
-      // удаление конкретной задачи
-      const findTask = this.tasks.findIndex((item) => item.id === task.id);
-      this.tasks.splice(findTask, 1);
+    closeModal() {
+      this.isModal = false;
     },
-    removeAll() {
-      // удаление всех задач
-      this.tasks = [];
+    bySort(field) {
+      return (a, b) => (a[field] > b[field] ? 1 : -1);
     },
-    sortingTasks() {
-      // for (let i = 0; i < this.tasks.length; i++) {
-      //   console.log(this.tasks[i].date);
-      // }
-      // for (let task of this.tasks)
-      // let users = [
-      //   { name: "John", age: 20, surname: "Johnson" },
-      //   { name: "Pete", age: 18, surname: "Peterson" },
-      //   { name: "Ann", age: 19, surname: "Hathaway" },
-      // ];
-
-      function byField(field) {
-        return (a, b) => (a[field] < b[field] ? 1 : -1);
-      }
-      this.tasks.sort(byField("date"));
-      console.log(this.tasks);
+    sortRating() {
+      this.arrayFilms.sort(this.bySort("rating"));
     },
-  },
-  computed: {
-    completedTasks() {
-      // фильтруем задачи и оставляем только сделанные
-      return this.tasks.filter((task) => task.do === true);
-    },
-    uncompletedTasks() {
-      // фильтруем задачи и оставляем только несделанные
-      return this.tasks.filter((task) => task.do === false);
-    },
-    filteredTasks() {
-      // функция поиска по title в несделанных задачах, если инпут не пустой
-      if (this.searchTitle !== "") {
-        let num = this.searchTitle.length;
-        return this.uncompletedTasks.filter(
-          (task) => task.title.substr(0, num) === this.searchTitle
+    searchFilm() {
+      if (this.searchFilms !== {}) {
+        let num = this.searchFilms.length;
+        this.arrayUpdateFilms = this.arrayFilms.filter(
+          (film) =>
+            film.nameRu.substr(0, num).toLowerCase() ==
+            this.searchFilms.toLowerCase()
         );
       } else {
-        return this.uncompletedTasks;
+        return this.arrayUpdateFilms;
       }
     },
   },
 };
 </script>
 
-// <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-body {
-  background-color: #e5e5e5;
-  font-family: "Courier New";
-  font-weight: 600;
-}
-
-h1,
-ul,
-p,
-button {
-  margin: 0px;
-  padding: 0px;
-  border: 0px;
-  background-color: white;
-}
-
+<style>
 .container {
   margin: 0 auto;
-  width: 440px;
-  background-color: white;
-  padding: 10px;
+  max-width: 1500px;
 }
-
-.header {
-  margin: 0 auto;
+.h1 {
+  margin-bottom: 20px;
 }
-
-.heading {
-  color: #3f3d56;
-  font-size: 24px;
-  background-image: url(assets/undraw_to_do_xvvc.svg);
-  background-repeat: no-repeat;
-  background-position: center;
-  height: 235px;
-  padding-top: 25px;
-  display: flex;
-  justify-content: center;
-}
-
-.week__item {
-  background-image: url(assets/day.svg);
-  display: flex;
-  color: white;
-  font-size: 14px;
-  width: 48px;
-  height: 51px;
-  align-self: center;
-  justify-content: center;
-}
-
-.week__list {
-  display: flex;
-  justify-content: space-between;
-}
-
-.text {
-  display: flex;
-  align-self: center;
-}
-
-.new-tasks {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.sort-rating {
   margin-bottom: 30px;
-}
-
-.inputs {
-  display: flex;
-  flex-direction: column;
-  width: 90%;
-}
-
-.save-task {
-  width: 42px;
-  height: 42px;
-  background-color: rgba(103, 107, 194, 1);
-  border: 0px;
+  display: inline-block;
+  margin-right: 30px;
+  font-size: 20px;
   border-radius: 10px;
-  margin-top: 10px;
-  background-image: url(assets/add.svg);
-  background-position: center center;
-  cursor: pointer;
-  background-repeat: no-repeat;
 }
-
-.input-title,
-.input-description {
-  height: 30px;
-  width: 100%;
-  margin-top: 10px;
+.input-search {
+  display: inline-block;
   border-radius: 10px;
-  border: 1px solid rgba(103, 107, 194, 1);
-  color: #3f3d56;
-  padding-left: 5px;
-}
-
-.task {
-  background-color: #fff;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.task:not(:last-child) {
-  margin-bottom: 10px;
-}
-
-.tasks {
-  padding-bottom: 10px;
-  border-bottom: 1px solid rgba(103, 107, 194, 1);
-  margin-bottom: 10px;
-}
-
-.title {
-  color: #3f3d56;
-  font-size: 15px;
-  display: flex;
-}
-
-.description {
-  color: #c4c4c4;
-  font-size: 12px;
-  display: flex;
-}
-
-.buttons {
-  height: 22px;
-  width: 12%;
-  display: flex;
-  justify-content: space-around;
-}
-
-.button-remove,
-.button-completed,
-.button-uncompleted {
-  width: 45%;
-  height: 100%;
-  background-repeat: no-repeat;
-  cursor: pointer;
-}
-
-.button-remove {
-  background-image: url(assets/icon1.svg);
-}
-
-.button-completed {
-  background-image: url(assets/Icon.svg);
-}
-
-.button-uncompleted {
-  background-image: url(assets/icon2.svg);
-}
-.tasks-completed {
-  opacity: 0.5;
-}
-.filterInput {
-  color: #3f3d56;
-  font-size: 14px;
-  border-color: rgba(103, 107, 194, 1);
-  border-radius: 5px;
-  padding: 5px 10px;
-}
-.change-tasks {
-  margin-bottom: 10px;
-  display: flex;
-  justify-content: space-around;
-}
-.btn-sorting,
-.btn-removeAll {
-  color: #3f3d56;
-  font-size: 14px;
-  border-color: rgba(103, 107, 194, 1);
-  border-radius: 5px;
-  padding: 5px 10px;
-  cursor: pointer;
-  border: 1px solid rgba(103, 107, 194, 1);
+  font-size: 20px;
 }
 </style>
